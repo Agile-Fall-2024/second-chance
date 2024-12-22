@@ -33,6 +33,9 @@ jobs:
     needs: build-and-push
 
     steps:
+    - name: Authenticate with GitHub Container Registry
+      run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u dshmmd --password-stdin
+
     - name: SSH to VPS and deploy the container
       uses: appleboy/ssh-action@v1.2.0
       with:
