@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ad.models import Advertisement
+from advertisement.models import Advertisement
 
 
 # Register your models here.
