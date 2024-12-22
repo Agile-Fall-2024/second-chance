@@ -46,8 +46,8 @@ jobs:
           docker run -d \
             --name django-container \
             -e SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} \
-            -e DEBUG=${{ variables.DJANGO_DEBUG }} \
-            -e ALLOWED_HOSTS=${{ variables.DJANGO_ALLOWED_HOSTS }} \
+            -e DEBUG=${{ secrets.DJANGO_DEBUG }} \
+            -e ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} \
             -e DB_NAME=${{ secrets.DB_NAME }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
