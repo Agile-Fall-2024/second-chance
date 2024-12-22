@@ -19,6 +19,13 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        if not username or not password:
+            return Response(
+                {'error': 'Please provide both username and password.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -27,6 +34,8 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         logout(request)
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
