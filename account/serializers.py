@@ -7,7 +7,7 @@ from .models import Account
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['phone_number', 'bio']
+        fields = ['phone_number', 'bio', 'address']
 
     def validate_phone_number(self, value):
         if value:
