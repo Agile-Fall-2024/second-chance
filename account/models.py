@@ -1,3 +1,4 @@
+import random
 from django.utils.timezone import now
 from datetime import timedelta
 from django.db import models
@@ -16,9 +17,8 @@ class Account(models.Model):
         return f"{self.user.username}'s Account"
 
     def generate_otp(self):
-        import pyotp
-        otp = pyotp.random_base32()[:6]
-        self.otp = otp
-        self.otp_expiry = now() + timedelta(minutes=2)  # OTP valid for 2 minutes
+        # Generate a 6-digit numeric OTP
+        self.otp = f"{random.randint(100000, 999999)}"
+        self.otp_expiry = now() + timedelta(minutes=3)  # OTP valid for 3 minutes
         self.save()
-        return otp
+        return self.otp
