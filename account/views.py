@@ -1,12 +1,24 @@
 from django.contrib.auth import authenticate, login, logout
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserSerializer, AccountSerializer
+from django.core.mail import send_mail
+from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 
 class SignupView(APIView):
+    @swagger_auto_schema(
+        request_body=UserSerializer,
+        responses={
+            201: UserSerializer,
+            400: 'Bad Request',
+        }
+    )
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -16,6 +28,24 @@ class SignupView(APIView):
 
 
 class LoginView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description="Username"),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description="Password"),
+            },
+            required=['username', 'password']
+        ),
+        responses={
+            200: openapi.Response(
+                description="OTP sent",
+                examples={"application/json": {"message": "OTP sent to your email address. Please verify OTP to proceed."}},
+            ),
+            400: 'Bad Request',
+            401: 'Unauthorized',
+        }
+    )
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -28,14 +58,69 @@ class LoginView(APIView):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+            account = user.account
+            otp = account.generate_otp()
+            send_mail(
+                'Ciz-Miz Login OTP',
+                f'Your OTP for login is: {otp}',
+                'chizmiz.agile@gmail.com',
+                [user.email],
+                fail_silently=False,
+            )
+            return Response(
+                {'message': 'OTP sent to your email address. Please verify OTP to proceed.'},
+                status=status.HTTP_200_OK
+            )
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+class OTPVerificationView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description="Username"),
+                'otp': openapi.Schema(type=openapi.TYPE_STRING, description="OTP"),
+            },
+            required=['username', 'otp']
+        ),
+        responses={
+            200: openapi.Response(description="Login successful"),
+            400: 'Invalid or expired OTP',
+            404: 'User not found',
+        }
+    )
+    def post(self, request):
+        username = request.data.get('username')
+        otp = request.data.get('otp')
 
+        if not username or not otp:
+            return Response(
+                {'error': 'Please provide both username and OTP.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(username=username)
+            account = user.account
+            if account.otp == otp and account.otp_expiry > now():
+                login(request, user)
+                account.otp = None
+                account.otp_expiry = None
+                account.save()
+                return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid or expired OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class LogoutView(APIView):
+    @swagger_auto_schema(
+        responses={
+            200: openapi.Response(description="Logout successful"),
+        }
+    )
     def post(self, request):
         logout(request)
         return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
@@ -44,6 +129,11 @@ class LogoutView(APIView):
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        responses={
+            200: UserSerializer,
+        }
+    )
     def get(self, request):
         user = request.user
         serializer = UserSerializer(user)
@@ -53,6 +143,13 @@ class UserDetailView(APIView):
 class AccountUpdateView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        request_body=AccountSerializer,
+        responses={
+            200: AccountSerializer,
+            400: 'Bad Request',
+        }
+    )
     def put(self, request):
         account = request.user.account
         data = request.data
