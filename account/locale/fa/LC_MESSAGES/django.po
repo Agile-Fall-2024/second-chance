@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-02 19:48+0330\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: account/views.py:20 account/views.py:46 account/views.py:151
+msgid "Bad Request"
+msgstr ""
+
+#: account/views.py:36 account/views.py:83
+msgid "Username"
+msgstr ""
+
+#: account/views.py:37
+msgid "Password"
+msgstr ""
+
+#: account/views.py:43
+msgid "OTP sent"
+msgstr ""
+
+#: account/views.py:44 account/views.py:72
+msgid "OTP sent to your email address. Please verify OTP to proceed."
+msgstr ""
+
+#: account/views.py:47
+msgid "Unauthorized"
+msgstr ""
+
+#: account/views.py:56
+msgid "Please provide both username and password."
+msgstr ""
+
+#: account/views.py:65
+msgid "Ciz-Miz Login OTP"
+msgstr ""
+
+#: account/views.py:66
+#, python-format
+msgid "Your OTP for login is: %(otp)s"
+msgstr ""
+
+#: account/views.py:75
+msgid "Invalid credentials"
+msgstr ""
+
+#: account/views.py:84
+msgid "OTP"
+msgstr ""
+
+#: account/views.py:89 account/views.py:112
+msgid "Login successful"
+msgstr ""
+
+#: account/views.py:90
+msgid "Invalid or expired OTP"
+msgstr ""
+
+#: account/views.py:91
+msgid "User not found"
+msgstr ""
+
+#: account/views.py:100
+msgid "Please provide both username and OTP."
+msgstr ""
+
+#: account/views.py:114
+msgid "Invalid or expired OTP."
+msgstr ""
+
+#: account/views.py:116
+msgid "User not found."
+msgstr ""
+
+#: account/views.py:122 account/views.py:127
+msgid "Logout successful"
+msgstr ""
