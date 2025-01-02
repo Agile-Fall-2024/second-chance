@@ -87,7 +87,7 @@ if DEBUG:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME', default=''),
             'USER': os.getenv('DB_USER', default=''),
             'PASSWORD': os.getenv('DB_PASSWORD', default=''),
@@ -117,16 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'fa'
-
-LANGUAGES = [
-    ('fa', 'Persian'),
-    ('en', 'English'),
-]
-
-LOCALE_PATHS = [
-    BASE_DIR / 'locale',
-]
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
