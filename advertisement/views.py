@@ -1,10 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, Category
 from advertisement.permissions import IsAuthorOrAdmin
-from advertisement.serializers import AdvertisementSummarySerializer, AdvertisementSerializer
-
+from advertisement.serializers import AdvertisementSummarySerializer, AdvertisementSerializer, CategorySerializer
 
 class AdvertisementViewSet(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
@@ -23,3 +23,7 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+class CategoryViewSet(ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
