@@ -6,7 +6,7 @@ from advertisement.models import Advertisement
 class AdvertisementSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
-        fields = ['id','author_id','title','main_picture','price','status']
+        fields = ['id','author_id','title','main_picture','price','status','created_at']
 
 class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
