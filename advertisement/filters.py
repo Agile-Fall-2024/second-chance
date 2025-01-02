@@ -65,3 +65,24 @@ class PriceFilterBackend(filters.BaseFilterBackend):
                 },
             },
         ]
+
+class CategoryFilterBackend(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        category = parse_int_or_none(request.query_params.get('category', None))
+        if category:
+            return queryset.filter(category=category)
+        return queryset
+
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': 'category',
+                'required': False,
+                'in': 'query',
+                'description': 'category filter',
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+        ]
