@@ -49,7 +49,6 @@ class PriceFilterBackend(filters.BaseFilterBackend):
                 'required': False,
                 'in': 'query',
                 'description': 'indicated minimum price',
-                'allowEmptyValue': True,
                 'schema': {
                     'type': 'integer',
                 },
@@ -59,7 +58,6 @@ class PriceFilterBackend(filters.BaseFilterBackend):
                 'required': False,
                 'in': 'query',
                 'description': 'indicated maximum price',
-                'allowEmptyValue': True,
                 'schema': {
                     'type': 'integer',
                 },
