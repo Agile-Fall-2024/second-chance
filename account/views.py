@@ -9,7 +9,7 @@ from .serializers import UserSerializer, AccountSerializer
 from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.contrib.auth.models import User
-from django.utils.translation import gettext as _
+from .translations import translate
 
 
 class SignupView(APIView):
@@ -17,7 +17,7 @@ class SignupView(APIView):
         request_body=UserSerializer,
         responses={
             201: UserSerializer,
-            400: _('Bad Request'),
+            400: translate("Bad Request"),
         }
     )
     def post(self, request):
@@ -33,18 +33,22 @@ class LoginView(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING, description=_("Username")),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description=_("Password")),
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description=translate("Username")),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description=translate("Password")),
             },
             required=['username', 'password']
         ),
         responses={
             200: openapi.Response(
-                description=_("OTP sent"),
-                examples={"application/json": {"message": _("OTP sent to your email address. Please verify OTP to proceed.")}},
+                description=translate("OTP sent"),
+                examples={
+                    "application/json": {
+                        "message": translate("OTP sent to your email address. Please verify OTP to proceed.")
+                    }
+                },
             ),
-            400: _('Bad Request'),
-            401: _('Unauthorized'),
+            400: translate("Bad Request"),
+            401: translate("Unauthorized"),
         }
     )
     def post(self, request):
@@ -53,7 +57,7 @@ class LoginView(APIView):
 
         if not username or not password:
             return Response(
-                {'error': _('Please provide both username and password.')},
+                {'error': translate("Please provide both username and password.")},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -62,17 +66,17 @@ class LoginView(APIView):
             account = user.account
             otp = account.generate_otp()
             send_mail(
-                _('Ciz-Miz Login OTP'),
-                _('Your OTP for login is: %(otp)s') % {'otp': otp},
+                translate("Ciz-Miz Login OTP"),
+                translate("Your OTP for login is: %(otp)s", otp=otp),
                 'chizmiz.agile@gmail.com',
                 [user.email],
                 fail_silently=False,
             )
             return Response(
-                {'message': _('OTP sent to your email address. Please verify OTP to proceed.')},
+                {'message': translate("OTP sent to your email address. Please verify OTP to proceed.")},
                 status=status.HTTP_200_OK
             )
-        return Response({'error': _('Invalid credentials')}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': translate("Invalid credentials")}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class OTPVerificationView(APIView):
@@ -80,15 +84,15 @@ class OTPVerificationView(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING, description=_("Username")),
-                'otp': openapi.Schema(type=openapi.TYPE_STRING, description=_("OTP")),
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description=translate("Username")),
+                'otp': openapi.Schema(type=openapi.TYPE_STRING, description=translate("OTP")),
             },
             required=['username', 'otp']
         ),
         responses={
-            200: openapi.Response(description=_("Login successful")),
-            400: _('Invalid or expired OTP'),
-            404: _('User not found'),
+            200: openapi.Response(description=translate("Login successful")),
+            400: translate("Invalid or expired OTP"),
+            404: translate("User not found"),
         }
     )
     def post(self, request):
@@ -97,7 +101,7 @@ class OTPVerificationView(APIView):
 
         if not username or not otp:
             return Response(
-                {'error': _('Please provide both username and OTP.')},
+                {'error': translate("Please provide both username and OTP.")},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -109,22 +113,22 @@ class OTPVerificationView(APIView):
                 account.otp = None
                 account.otp_expiry = None
                 account.save()
-                return Response({'message': _('Login successful')}, status=status.HTTP_200_OK)
+                return Response({'message': translate("Login successful")}, status=status.HTTP_200_OK)
             else:
-                return Response({'error': _('Invalid or expired OTP.')}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': translate("Invalid or expired OTP.")}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
-            return Response({'error': _('User not found.')}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': translate("User not found.")}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LogoutView(APIView):
     @swagger_auto_schema(
         responses={
-            200: openapi.Response(description=_("Logout successful")),
+            200: openapi.Response(description=translate("Logout successful")),
         }
     )
     def post(self, request):
         logout(request)
-        return Response({'message': _('Logout successful')}, status=status.HTTP_200_OK)
+        return Response({'message': translate("Logout successful")}, status=status.HTTP_200_OK)
 
 
 class UserDetailView(APIView):
@@ -148,7 +152,7 @@ class AccountUpdateView(APIView):
         request_body=AccountSerializer,
         responses={
             200: AccountSerializer,
-            400: _('Bad Request'),
+            400: translate("Bad Request"),
         }
     )
     def put(self, request):
