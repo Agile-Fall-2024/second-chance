@@ -113,7 +113,13 @@ class OTPVerificationView(APIView):
                 account.otp = None
                 account.otp_expiry = None
                 account.save()
-                return Response({'message': translate("Login successful")}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        'message': translate("Login successful"),
+                        'phone_number': account.phone_number
+                    },
+                    status=status.HTTP_200_OK
+                )
             else:
                 return Response({'error': translate("Invalid or expired OTP.")}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
